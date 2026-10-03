@@ -8,14 +8,17 @@ import './styles/ui.css'
 import './styles/admin.css'
 import './styles/staff.css'
 import './styles/pages.css'
+import './styles/splash.css'
 import { AuthProvider } from './hooks/useAuth'
 import { ToastProvider } from './hooks/useToast'
 import { DraftProvider } from './hooks/useDraft'
 import { AppRoutes } from './routes/AppRoutes'
 import { PushToasts } from './components/layout/PushToasts'
+import { Splash } from './components/layout/Splash'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+    <Splash />
     <BrowserRouter>
       <AuthProvider>
         <ToastProvider>
