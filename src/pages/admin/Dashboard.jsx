@@ -130,7 +130,7 @@ function Kpis({ data, loading }) {
       tone: k?.ready ? 'hero' : null,
     },
     { label: 'Live on Shopify', value: k && fmtNum(k.liveTitles), sub: k && `${fmtNum(k.liveUnits)} units in stock`, to: '/admin/live' },
-    { label: 'Out of stock', value: k?.outOfStock, sub: k && 'Detected by stock check', to: '/admin/out-of-stock', tone: k?.outOfStock ? 'warn' : null },
+    { label: 'Out of stock', value: k?.outOfStock, sub: k && 'Detected by stock check', to: '/admin/waiting-list?tab=stock', tone: k?.outOfStock ? 'warn' : null },
     { label: 'Added today', value: k?.addedToday, sub: k && `${k.approvedToday} approved today`, to: '/admin/reports' },
   ]
   return (

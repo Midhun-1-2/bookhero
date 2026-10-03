@@ -15,11 +15,13 @@ import { DraftProvider } from './hooks/useDraft'
 import { AppRoutes } from './routes/AppRoutes'
 import { PushToasts } from './components/layout/PushToasts'
 import { Splash } from './components/layout/Splash'
+import { ScrollToTop } from './components/layout/ScrollToTop'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <Splash />
     <BrowserRouter>
+      <ScrollToTop />
       <AuthProvider>
         <ToastProvider>
           <DraftProvider>

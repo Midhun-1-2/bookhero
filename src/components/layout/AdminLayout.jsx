@@ -2,7 +2,7 @@ import { Suspense, useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
   Activity, BarChart3, Bell, BookCopy, CheckCircle2, ChevronDown, Clock3, Hourglass, LayoutDashboard, LogOut, Menu as MenuIcon,
-  Ellipsis, Flag, PackageX, Search, Settings, Smartphone, Users, Warehouse, X, XCircle,
+  Ellipsis, Flag, Search, Settings, Smartphone, Users, Warehouse, X, XCircle,
 } from 'lucide-react'
 import { Logo } from './Logo'
 import { CommandSearch } from './CommandSearch'
@@ -23,11 +23,10 @@ const NAV = [
     group: 'Inventory',
     items: [
       { to: '/admin/pending', label: 'Pending', icon: Clock3, count: 'pending' },
-      { to: '/admin/waiting-list', label: 'Waiting list', icon: Hourglass, count: 'ready' },
+      { to: '/admin/waiting-list', label: 'Waiting & stock', icon: Hourglass, count: 'ready' },
       { to: '/admin/approved', label: 'Approved', icon: CheckCircle2 },
       { to: '/admin/rejected', label: 'Rejected', icon: XCircle },
       { to: '/admin/live', label: 'Live inventory', icon: BookCopy },
-      { to: '/admin/out-of-stock', label: 'Out of stock', icon: PackageX, count: 'oos' },
       { to: '/admin/flags', label: 'Flags', icon: Flag, count: 'flagged' },
     ],
   },
@@ -53,11 +52,10 @@ const TITLES = [
   ['/admin/pending/', 'Review submission'],
   ['/admin/books/', 'Book detail'],
   ['/admin/pending', 'Pending review'],
-  ['/admin/waiting-list', 'Waiting list'],
+  ['/admin/waiting-list', 'Waiting list & stock'],
   ['/admin/approved', 'Approved'],
   ['/admin/rejected', 'Rejected'],
   ['/admin/live', 'Live inventory'],
-  ['/admin/out-of-stock', 'Out of stock'],
   ['/admin/flags', 'Content flags'],
   ['/admin/shelves', 'Shelves'],
   ['/admin/staff', 'Staff'],
@@ -113,7 +111,7 @@ const TABS = [
   { to: '/admin', label: 'Home', icon: LayoutDashboard, end: true },
   { to: '/admin/pending', label: 'Pending', icon: Clock3, count: 'pending' },
   { to: '/admin/waiting-list', label: 'Waiting', icon: Hourglass, count: 'ready' },
-  { to: '/admin/out-of-stock', label: 'Stock', icon: PackageX, count: 'oos' },
+  { to: '/admin/live', label: 'Live', icon: BookCopy },
 ]
 const TAB_PATHS = TABS.map((t) => t.to)
 

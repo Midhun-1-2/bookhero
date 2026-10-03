@@ -26,7 +26,7 @@ function linkFor(n, role) {
   switch (n.type) {
     case 'stock_out':
     case 'stock_out_reminder':
-      return '/admin/out-of-stock'
+      return '/admin/waiting-list?tab=stock'
     case 'waiting_ready':
     case 'waiting_created':
       return '/admin/waiting-list'

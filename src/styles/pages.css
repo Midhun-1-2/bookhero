@@ -466,7 +466,7 @@
 /* =========================================================================
    Activity log
    ========================================================================= */
-.log { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; transition: opacity var(--t-2); }
+.log { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: clip; transition: opacity var(--t-2); }
 .log.is-refreshing { opacity: 0.7; }
 .log__head, .log__row { display: grid; grid-template-columns: 64px 180px minmax(0, 1fr) 96px; gap: 14px; align-items: start; padding: 0 16px; }
 .log__head { padding-top: 10px; padding-bottom: 10px; background: #fbfaf6; border-bottom: 1px solid var(--line); font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
@@ -843,3 +843,7 @@
   .replib__item { grid-template-columns: auto 1fr auto; }
   .replib__count { display: none; }
 }
+
+/* Out-of-stock tab inside Waiting list */
+.oos-intro { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+.oos-intro p { font-size: 13px; color: var(--muted); max-width: 720px; }

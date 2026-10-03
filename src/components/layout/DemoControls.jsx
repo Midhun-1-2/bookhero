@@ -43,7 +43,7 @@ const SCENARIOS = [
   { n: 3, title: 'Same shelf duplicate', path: 'Staff → Scan → Great Gatsby (Scribner, different ISBN) → A-12', result: 'Rejected', role: 'staff', to: '/staff/scan' },
   { n: 4, title: 'Different shelf', path: 'Staff → Scan → Great Gatsby (Scribner) → B-04', result: 'Waiting list', role: 'staff', to: '/staff/scan' },
   { n: 5, title: 'Admin rejection', path: 'Admin → Pending → Reject → choose a reason', result: 'Rejected', role: 'admin', to: '/admin/pending' },
-  { n: 6, title: 'Stock out', path: 'Demo controls → Simulate stock-out → The Great Gatsby', result: 'Out of stock + push', role: 'admin', to: '/admin/out-of-stock' },
+  { n: 6, title: 'Stock out', path: 'Demo controls → Simulate stock-out → The Great Gatsby', result: 'Out of stock + push', role: 'admin', to: '/admin/waiting-list?tab=stock' },
   { n: 7, title: 'Waiting-list approval', path: 'Admin → Waiting list → Ready → Review & approve', result: 'Same product, new shelf', role: 'admin', to: '/admin/waiting-list' },
   { n: 8, title: 'Content flag (staff)', path: 'Staff → Scan → The Song of Achilles → any shelf → Submit', result: 'Pending + flagged', role: 'staff', to: '/staff/scan' },
   { n: 9, title: 'Content flag (admin)', path: 'Admin → Flags → Needs review → open → Mark reviewed / Approve', result: 'Reviewed', role: 'admin', to: '/admin/flags' },

@@ -13,7 +13,6 @@ const WaitingList = lazy(() => import('../pages/admin/WaitingList'))
 const Approved = lazy(() => import('../pages/admin/Approved'))
 const Rejected = lazy(() => import('../pages/admin/Rejected'))
 const LiveInventory = lazy(() => import('../pages/admin/LiveInventory'))
-const OutOfStock = lazy(() => import('../pages/admin/OutOfStock'))
 const BookDetail = lazy(() => import('../pages/admin/BookDetail'))
 const Shelves = lazy(() => import('../pages/admin/Shelves'))
 const Flags = lazy(() => import('../pages/admin/Flags'))
@@ -69,7 +68,7 @@ export function AppRoutes() {
         <Route path="approved" element={<Approved />} />
         <Route path="rejected" element={<Rejected />} />
         <Route path="live" element={<LiveInventory />} />
-        <Route path="out-of-stock" element={<OutOfStock />} />
+        <Route path="out-of-stock" element={<Navigate to="/admin/waiting-list?tab=stock" replace />} />
         <Route path="books/:id" element={<BookDetail />} />
         <Route path="flags" element={<Flags />} />
         <Route path="shelves" element={<Shelves />} />

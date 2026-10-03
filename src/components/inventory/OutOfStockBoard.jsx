@@ -3,15 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import { BellRing, CheckCircle2, CircleDashed, FlaskConical, PackageX, Radar, Store } from 'lucide-react'
 import { getOutOfStock } from '../../services/mockApi'
 import { useQuery, useTicker } from '../../hooks/useStore'
-import { PageHeader } from '../../components/ui/Misc'
-import { Button } from '../../components/ui/Button'
-import { EmptyState, ErrorState, Skeleton } from '../../components/ui/Feedback'
-import { ShelfTag, StatusChip, SyncChip } from '../../components/ui/Status'
-import { BookCover } from '../../components/books/BookCover'
-import { openDemoPanel } from '../../components/layout/DemoControls'
+import { Button } from '../ui/Button'
+import { EmptyState, ErrorState, Skeleton } from '../ui/Feedback'
+import { ShelfTag, StatusChip, SyncChip } from '../ui/Status'
+import { BookCover } from '../books/BookCover'
+import { openDemoPanel } from '../layout/DemoControls'
 import { cn, formatDateTime, formatTime, timeAgo, clockNow } from '../../utils/format'
 
-export default function OutOfStock() {
+/** Out-of-stock master/detail — shown as the “Out of stock” tab of the Waiting list page. */
+export function OutOfStockBoard() {
   const { data, loading, error, reload } = useQuery(() => getOutOfStock(), [])
   const [selected, setSelected] = useState(null)
   useTicker()
@@ -19,15 +19,15 @@ export default function OutOfStock() {
 
   return (
     <div>
-      <PageHeader
-        title="Out of stock"
-        description="Detected by the scheduled stock check (every 10 minutes). Admin and staff get push #1 immediately and push #2 if the book is still out of stock 24 hours later."
-        actions={
-          <button className="demo-link" onClick={openDemoPanel}>
-            <FlaskConical size={14} aria-hidden /> Demo: simulate a stock-out
-          </button>
-        }
-      />
+      <div className="oos-intro">
+        <p>
+          Detected by the scheduled stock check (every 10 minutes). Admin and staff get push #1 immediately and push #2 if the book is still out of stock 24 hours later. A
+          ready waiting-list entry can be approved right here.
+        </p>
+        <button className="demo-link" onClick={openDemoPanel}>
+          <FlaskConical size={14} aria-hidden /> Demo: simulate a stock-out
+        </button>
+      </div>
       {loading ? (
         <div className="oos">
           <div className="oos__list">

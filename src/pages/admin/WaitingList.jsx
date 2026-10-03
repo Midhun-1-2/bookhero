@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowDown, Check, Hourglass, Store, X } from 'lucide-react'
-import { approveWaitingEntry, getWaitingList, rejectItem } from '../../services/mockApi'
-import { useQuery, useTicker } from '../../hooks/useStore'
+import { approveWaitingEntry, getWaitingList, rejectItem, selectors } from '../../services/mockApi'
+import { useQuery, useSelector, useTicker } from '../../hooks/useStore'
+import { OutOfStockBoard } from '../../components/inventory/OutOfStockBoard'
 import { useToast } from '../../hooks/useToast'
 import { DataTable } from '../../components/ui/Data'
 import { PageHeader } from '../../components/ui/Misc'
@@ -17,7 +18,8 @@ import { cn, formatDateTime, formatTime, timeAgo } from '../../utils/format'
 
 export default function WaitingList() {
   const [params, setParams] = useSearchParams()
-  const [tab, setTab] = useState('ready')
+  const tab = params.get('tab') || 'ready'
+  const oosCount = useSelector(() => selectors.navCounts().oos)
   const { data, loading, error, reload, refreshing } = useQuery(() => getWaitingList(), [])
   useTicker()
   const reviewId = params.get('review')
@@ -67,8 +69,8 @@ export default function WaitingList() {
   return (
     <div>
       <PageHeader
-        title="Waiting list"
-        description="The same title + author is already on another shelf. When that stock sells out, the entry becomes Ready for approval — approving adds its quantity to the same Shopify product and makes its shelf active."
+        title="Waiting list & stock"
+        description="The same title + author is already on another shelf. When that stock sells out, the entry becomes Ready for approval — approving adds its quantity to the same Shopify product and makes its shelf active. Sold-out books are under Out of stock."
       />
       <div className="flowstrip" aria-label="How the waiting list works">
         <span>
@@ -87,17 +89,18 @@ export default function WaitingList() {
         <Segmented
           label="Waiting list filter"
           value={effectiveTab}
-          onChange={(v) => {
-            setTab(v)
-            setParams(v === 'ready' ? {} : { tab: v })
-          }}
+          onChange={(v) => setParams(v === 'ready' ? {} : { tab: v })}
           options={[
             { value: 'ready', label: 'Ready for approval', count: data ? ready.length : null },
             { value: 'waiting', label: 'Waiting for sell-out', count: data ? waiting.length : null },
-            { value: 'all', label: 'All', count: data ? data.length : null },
+            { value: 'all', label: 'All waiting', count: data ? data.length : null },
+            { value: 'stock', label: 'Out of stock', count: oosCount },
           ]}
         />
       </div>
+      {effectiveTab === 'stock' ? (
+        <OutOfStockBoard />
+      ) : (
       <DataTable
         columns={columns}
         rows={rows?.map((r) => ({ ...r, __highlight: r.id === reviewId }))}
@@ -115,6 +118,7 @@ export default function WaitingList() {
           </EmptyState>
         }
       />
+      )}
       <WaitingDrawer entry={reviewing} onClose={() => setParams(effectiveTab === 'ready' ? {} : { tab: effectiveTab })} />
     </div>
   )
