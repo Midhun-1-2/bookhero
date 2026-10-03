@@ -1,11 +1,10 @@
 import { Suspense } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { Bell, ChevronDown, House, Keyboard, LayoutDashboard, Layers, LogOut, ScanLine, Smartphone, UserRound } from 'lucide-react'
+import { Bell, ChevronDown, House, Keyboard, LayoutDashboard, Layers, LogOut, ScanLine, UserRound } from 'lucide-react'
 import { Logo } from './Logo'
 import { DemoBadge } from './DemoControls'
 import { useAuth } from '../../hooks/useAuth'
 import { useMediaQuery, useSelector } from '../../hooks/useStore'
-import { usePhonePreview, setPhonePreview } from '../../hooks/usePhonePreview'
 import { getLastShelf } from '../../hooks/useDraft'
 import { selectors } from '../../services/mockApi'
 import { Skeleton } from '../ui/Feedback'
@@ -28,15 +27,12 @@ const TITLES = [
 ]
 
 /**
- * Staff app. Phones get the mobile PWA (tab bar, full-screen flows).
- * Desktop gets a full workspace like the admin dashboard; presenters can
- * still switch to a phone frame from the sidebar or Demo controls.
+ * Staff app — layout follows the screen size, like the admin dashboard:
+ * phones get the mobile PWA (tab bar, full-screen flows), desktop gets a full workspace.
  */
 export function StaffLayout() {
   const desktop = useMediaQuery('(min-width: 900px)')
-  const phonePreview = usePhonePreview()
-  if (desktop && !phonePreview) return <StaffDesktop />
-  return <StaffPhone framed={desktop} />
+  return desktop ? <StaffDesktop /> : <StaffPhone />
 }
 
 function PageFallback() {
@@ -100,12 +96,6 @@ function StaffDesktop() {
               <ShelfTag id={lastShelf} />
             </div>
           )}
-          <button className="sidebar__shop sidebar__preview" onClick={() => setPhonePreview(true)}>
-            <span className="sidebar__shop-head">
-              <Smartphone size={15} aria-hidden /> View at phone size
-            </span>
-            <span className="sidebar__shop-sub">How staff see it on the shop floor</span>
-          </button>
         </div>
       </aside>
       <div className="admin__main">
@@ -132,9 +122,6 @@ function StaffDesktop() {
               </div>
               <MenuItem icon={UserRound} onClick={() => navigate('/staff/profile')}>
                 Profile
-              </MenuItem>
-              <MenuItem icon={Smartphone} onClick={() => setPhonePreview(true)}>
-                View at phone size
               </MenuItem>
               <MenuItem
                 icon={LayoutDashboard}
@@ -170,31 +157,14 @@ function StaffDesktop() {
   )
 }
 
-function StaffPhone({ framed }) {
+function StaffPhone() {
   const { pathname } = useLocation()
   const { user } = useAuth()
   const unread = useSelector(() => selectors.unreadCount(user))
   const inFlow = FLOW.some((p) => pathname.startsWith(p))
 
   return (
-    <div className={cn('staff-stage', framed && 'staff-stage--preview')}>
-      {framed && (
-        <aside className="staff-stage__aside">
-          <Logo size={44} sub="Staff app" />
-          <p className="staff-stage__lead">Phone preview — exactly what staff hold on the shop floor.</p>
-          <ul className="staff-stage__facts">
-            <li>Scan → correct → shelf → quantity → submit</li>
-            <li>Duplicate check on submit (title + author)</li>
-            <li>Push alerts when stock runs out</li>
-          </ul>
-          <div className="staff-stage__actions">
-            <button className="chip-btn" onClick={() => setPhonePreview(false)}>
-              Back to full desktop view
-            </button>
-            <DemoBadge />
-          </div>
-        </aside>
-      )}
+    <div className="staff-stage">
       <div className={cn('phone', inFlow && 'phone--flow')}>
         {!inFlow && (
           <header className="s-appbar">

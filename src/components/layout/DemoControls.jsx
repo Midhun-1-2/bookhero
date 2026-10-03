@@ -9,7 +9,6 @@ import { demo, selectors } from '../../services/mockApi'
 import { DEMO_ISBNS } from '../../services/catalog'
 import { useAuth } from '../../hooks/useAuth'
 import { useSelector } from '../../hooks/useStore'
-import { setPhonePreview, usePhonePreview } from '../../hooks/usePhonePreview'
 import { useToast } from '../../hooks/useToast'
 import { cn, longDate, formatTime } from '../../utils/format'
 
@@ -62,7 +61,6 @@ function DemoPanel({ open, onClose }) {
   const [confirmReset, setConfirmReset] = useState(false)
   const stages = useStages()
   const [busy, setBusy] = useState('')
-  const phonePreview = usePhonePreview()
 
   const gatsby = candidates.find((c) => c.title === 'The Great Gatsby')
   const chosen = target || gatsby?.id || candidates[0]?.id || ''
@@ -135,7 +133,6 @@ function DemoPanel({ open, onClose }) {
             </span>
           </button>
         </div>
-        <Checkbox label="Show the Staff app in a phone frame on desktop" checked={phonePreview} onChange={(e) => setPhonePreview(e.target.checked)} />
       </section>
 
       <section className="demo-sec">
