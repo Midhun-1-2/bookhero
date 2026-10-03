@@ -1,6 +1,6 @@
 import { cn } from '../../utils/format'
 
-export function Logo({ size = 42, withWord = true, tone = 'dark', sub, className }) {
+export function Logo({ size = 34, withWord = true, tone = 'dark', sub, className }) {
   return (
     <span className={cn('logo', `logo--${tone}`, className)}>
       <img src="/logo.webp" width={size} height={size} alt="" className="logo__mark" />

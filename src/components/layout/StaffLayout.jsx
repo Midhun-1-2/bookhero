@@ -180,7 +180,7 @@ function StaffPhone({ framed }) {
     <div className={cn('staff-stage', framed && 'staff-stage--preview')}>
       {framed && (
         <aside className="staff-stage__aside">
-          <Logo size={54} sub="Staff app" />
+          <Logo size={44} sub="Staff app" />
           <p className="staff-stage__lead">Phone preview — exactly what staff hold on the shop floor.</p>
           <ul className="staff-stage__facts">
             <li>Scan → correct → shelf → quantity → submit</li>
@@ -196,6 +196,13 @@ function StaffPhone({ framed }) {
         </aside>
       )}
       <div className={cn('phone', inFlow && 'phone--flow')}>
+        {!inFlow && (
+          <header className="s-appbar">
+            <Logo size={40} withWord={false} />
+            <span className="s-appbar__title">{TITLES.find(([p]) => pathname.startsWith(p))?.[1] ?? 'BookHero'}</span>
+            <DemoBadge floating />
+          </header>
+        )}
         <div className="phone__screen" id="main">
           <Suspense fallback={<PageFallback />}>
             <div key={pathname} className={cn('staff-page', !inFlow && 'page-enter')}>
@@ -229,11 +236,6 @@ function StaffPhone({ framed }) {
               <span>Profile</span>
             </NavLink>
           </nav>
-        )}
-        {!framed && (
-          <div className="phone__demo">
-            <DemoBadge floating />
-          </div>
         )}
       </div>
     </div>
