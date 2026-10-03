@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Download } from 'lucide-react'
+import { BookCopy, CheckCircle2, Download, Hourglass, PackageX, Users, Warehouse, XCircle } from 'lucide-react'
 import { getReports } from '../../services/mockApi'
 import { useQuery } from '../../hooks/useStore'
 import { Avatar, PageHeader, Panel } from '../../components/ui/Misc'
@@ -8,22 +8,22 @@ import { Button } from '../../components/ui/Button'
 import { ErrorState, Skeleton } from '../../components/ui/Feedback'
 import { LineChart, ShelfBars } from '../../components/charts/Charts'
 import { ShelfFilter, StaffFilter } from '../../components/inventory/Filters'
-import { downloadCsv, formatDate } from '../../utils/format'
+import { downloadCsv, formatDate, formatDateTime } from '../../utils/format'
 
 export default function Reports() {
   const [days, setDays] = useState(14)
   const [shelf, setShelf] = useState('')
   const [staff, setStaff] = useState('')
   const [status, setStatus] = useState('')
-  const { data, loading, error, reload, refreshing } = useQuery(() => getReports({ days, shelf, staff, status }), [days, shelf, staff, status])
+  const { data, error, reload, refreshing } = useQuery(() => getReports({ days, shelf, staff, status }), [days, shelf, staff, status])
 
   const exportSeries = () =>
     downloadCsv(
       `bookhero-books-${days}d.csv`,
-      data.series.map((d) => ({ Date: formatDate(d.date, { year: 'numeric' }), Added: d.added, Approved: d.approved, Rejected: d.rejected })),
+      (data?.series ?? []).map((d) => ({ Date: formatDate(d.date, { year: 'numeric' }), Added: d.added, Approved: d.approved, Rejected: d.rejected })),
     )
   const exportStaff = () =>
-    downloadCsv('bookhero-staff-activity.csv', data.staffRows.map((s) => ({ Staff: s.name, Submitted: s.submitted, Approved: s.approved, Rejected: s.rejected, Waiting: s.waiting, 'Approval rate %': s.rate ?? '' })))
+    downloadCsv('bookhero-staff-activity.csv', (data?.staffRows ?? []).map((s) => ({ Staff: s.name, Submitted: s.submitted, Approved: s.approved, Rejected: s.rejected, Waiting: s.waiting, 'Approval rate %': s.rate ?? '' })))
 
   return (
     <div className={refreshing ? 'is-refreshing' : ''}>
@@ -68,14 +68,16 @@ export default function Reports() {
             ].map(([l, v, sub]) => (
               <div key={l} className="report-total">
                 <span className="kpis__label">{l}</span>
-                {loading ? <Skeleton w={50} h={26} /> : <span className="kpis__value num">{v}</span>}
+                {!data ? <Skeleton w={50} h={26} /> : <span className="kpis__value num">{v}</span>}
                 <span className="kpis__sub">{sub || `last ${days} days`}</span>
               </div>
             ))}
           </section>
 
+          <ReportLibrary data={data} days={days} />
+
           <Panel title="Books added, approved and rejected" eyebrow={`Last ${days} days`} className="reports__trend">
-            {loading ? (
+            {!data ? (
               <Skeleton h={230} r={6} />
             ) : (
               <LineChart
@@ -90,7 +92,7 @@ export default function Reports() {
           </Panel>
 
           <Panel title="Inventory by shelf" eyebrow="Units on Shopify" className="reports__shelves">
-            {loading ? <Skeleton h={230} r={6} /> : <ShelfBars shelves={data.byShelf.filter((s) => s.units > 0)} limit={10} />}
+            {!data ? <Skeleton h={230} r={6} /> : <ShelfBars shelves={data.byShelf.filter((s) => s.units > 0)} limit={10} />}
           </Panel>
 
           <Panel
@@ -102,7 +104,7 @@ export default function Reports() {
               </Button>
             }
           >
-            {loading ? (
+            {!data ? (
               <Skeleton h={200} r={6} />
             ) : (
               <div className="table-wrap table-wrap--plain">
@@ -151,7 +153,7 @@ export default function Reports() {
           </Panel>
 
           <Panel title="Rejection reasons" className="reports__reasons">
-            {loading ? (
+            {!data ? (
               <Skeleton h={160} r={6} />
             ) : data.reasons.length === 0 ? (
               <p className="muted">No rejections in this range.</p>
@@ -172,5 +174,68 @@ export default function Reports() {
         </div>
       )}
     </div>
+  )
+}
+
+
+/* ---------- Report library: ready-made mock reports with CSV export ---------- */
+function ReportLibrary({ data, days }) {
+  const d = (t) => (t ? formatDateTime(t) : '')
+  const reports = data
+    ? [
+        {
+          key: 'added', icon: BookCopy, name: 'Books added', desc: `Every book submitted by staff in the last ${days} days, with current status.`,
+          rows: data.lists.added.map((r) => ({ Title: r.title, Author: r.author, ISBN: r.isbn, Shelf: r.shelf, Quantity: r.quantity, 'Submitted by': r.submittedBy, Submitted: d(r.submittedAt), Status: r.status })),
+        },
+        {
+          key: 'approved', icon: CheckCircle2, name: 'Books approved', desc: 'Approvals with the Shopify product created for each book.',
+          rows: data.lists.approved.map((r) => ({ Title: r.title, Author: r.author, ISBN: r.isbn, Shelf: r.shelf, Quantity: r.quantity, Approved: d(r.approvedAt), 'Shopify product': r.productId })),
+        },
+        {
+          key: 'rejected', icon: XCircle, name: 'Books rejected', desc: 'Duplicate-check and admin rejections with reasons.',
+          rows: data.lists.rejected.map((r) => ({ Title: r.title, Author: r.author, ISBN: r.isbn, Shelf: r.shelf, Reason: r.reason, 'Rejected by': r.by, Rejected: d(r.rejectedAt), 'Submitted by': r.submittedBy })),
+        },
+        {
+          key: 'waiting', icon: Hourglass, name: 'Waiting list', desc: 'Open waiting-list entries and the stock they are waiting behind.',
+          rows: data.lists.waiting.map((r) => ({ Title: r.title, Author: r.author, 'Current shelf': r.currentShelf, 'Current stock': r.currentStock, 'Waiting shelf': r.shelf, Quantity: r.quantity, Status: r.ready ? 'Ready for approval' : 'Waiting', 'Submitted by': r.submittedBy })),
+        },
+        {
+          key: 'oos', icon: PackageX, name: 'Out of stock', desc: 'Sold-out books, when stock-out was detected and push reminder status.',
+          rows: data.lists.outOfStock.map((r) => ({ Title: r.title, Author: r.author, Shelf: r.shelf, 'Stock-out detected': d(r.stockOutAt), 'Push #2 sent': r.push2 ? 'Yes' : 'No', 'Waiting entries': r.waitingEntries })),
+        },
+        {
+          key: 'shelf', icon: Warehouse, name: 'Inventory by shelf', desc: 'Books, units on Shopify and waiting entries per shelf.',
+          rows: data.byShelf.map((s) => ({ Shelf: s.code, Status: s.status, Books: s.titles, Units: s.units, Waiting: s.waiting, Pending: s.pending })),
+        },
+        {
+          key: 'staff', icon: Users, name: 'Staff activity', desc: 'Submissions, approvals, rejections and approval rate per staff member.',
+          rows: data.staffRows.map((s) => ({ Staff: s.name, Submitted: s.submitted, Approved: s.approved, Rejected: s.rejected, Waiting: s.waiting, 'Approval rate %': s.rate ?? '' })),
+        },
+      ]
+    : []
+  return (
+    <Panel title="Report library" eyebrow="Mock data · CSV export" className="reports__library">
+      {!data ? (
+        <Skeleton h={160} r={6} />
+      ) : (
+        <ul className="replib">
+          {reports.map((r) => (
+            <li key={r.key} className="replib__item">
+              <span className="replib__icon">
+                <r.icon size={17} aria-hidden />
+              </span>
+              <span className="replib__text">
+                <strong>{r.name}</strong>
+                <span>{r.desc}</span>
+              </span>
+              <span className="replib__count num">{r.rows.length} rows</span>
+              <Button size="sm" icon={Download} disabled={!r.rows.length} onClick={() => downloadCsv(`bookhero-${r.key}-report.csv`, r.rows)}>
+                CSV
+              </Button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Panel>
   )
 }

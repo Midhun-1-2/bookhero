@@ -850,7 +850,18 @@ export async function getReports({ days = 14, shelf = '', staff = '', status = '
     .sort((a, b) => b.submitted - a.submitted)
   const reasons = {}
   for (const i of scoped.filter((x) => x.status === 'rejected' && inRange(x.rejectedAt))) reasons[i.rejectReason] = (reasons[i.rejectReason] || 0) + 1
-  return copy({ series, totals, byShelf, staffRows, reasons: Object.entries(reasons).map(([reason, count]) => ({ reason, count })).sort((a, b) => b.count - a.count) })
+  const row = (i) => ({ title: i.title, author: i.author, isbn: i.isbn, shelf: i.shelfId, quantity: i.quantity, submittedBy: userName(i.submittedBy), submittedAt: i.submittedAt })
+  const lists = {
+    added: scoped.filter((i) => inRange(i.submittedAt)).sort((a, b) => b.submittedAt - a.submittedAt).map((i) => ({ ...row(i), status: i.status })),
+    approved: scoped.filter((i) => inRange(i.approvedAt)).sort((a, b) => b.approvedAt - a.approvedAt).map((i) => ({ ...row(i), approvedAt: i.approvedAt, productId: i.productId })),
+    rejected: scoped.filter((i) => i.status === 'rejected' && inRange(i.rejectedAt)).map((i) => ({ ...row(i), reason: i.rejectReason, by: userName(i.rejectedBy), rejectedAt: i.rejectedAt })),
+    waiting: scoped.filter((i) => i.status === 'waiting').map((i) => {
+      const p = s.items.find((x) => x.id === i.linkedItemId)
+      return { ...row(i), currentShelf: p?.shelfId, currentStock: p?.stock, ready: p?.status === 'out_of_stock' }
+    }),
+    outOfStock: scoped.filter((i) => i.status === 'out_of_stock').map((i) => ({ ...row(i), stockOutAt: i.stockOutAt, push2: !!i.push2At, waitingEntries: s.items.filter((w) => w.status === 'waiting' && w.linkedItemId === i.id).length })),
+  }
+  return copy({ series, totals, byShelf, staffRows, lists, reasons: Object.entries(reasons).map(([reason, count]) => ({ reason, count })).sort((a, b) => b.count - a.count) })
 }
 
 // --------------------------------------------------------------------------
