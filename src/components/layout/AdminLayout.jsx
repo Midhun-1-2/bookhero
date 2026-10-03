@@ -264,7 +264,7 @@ export function AdminLayout() {
         <header className="topbar">
           <IconButton icon={MenuIcon} label="Open menu" className="topbar__menu" onClick={() => setDrawer(true)} />
           <div className="topbar__mobile-logo">
-            <Logo size={28} withWord={false} />
+            <Logo size={34} withWord={false} />
           </div>
           <h1 className="topbar__title">{title}</h1>
           {phone ? (

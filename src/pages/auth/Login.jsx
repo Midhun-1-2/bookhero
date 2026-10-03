@@ -77,7 +77,7 @@ export default function Login() {
       <section className="login__panel">
         <div className="login__top">
           <span className="login__mobile-logo">
-            <img src="/logo.webp" alt="BookHero" width={56} height={56} />
+            <img src="/logo.webp" alt="BookHero" width={66} height={66} />
           </span>
           <DemoBadge />
         </div>

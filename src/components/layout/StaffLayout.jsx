@@ -180,7 +180,7 @@ function StaffPhone({ framed }) {
     <div className={cn('staff-stage', framed && 'staff-stage--preview')}>
       {framed && (
         <aside className="staff-stage__aside">
-          <Logo size={44} sub="Staff app" />
+          <Logo size={54} sub="Staff app" />
           <p className="staff-stage__lead">Phone preview — exactly what staff hold on the shop floor.</p>
           <ul className="staff-stage__facts">
             <li>Scan → correct → shelf → quantity → submit</li>
